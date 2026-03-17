@@ -9,6 +9,7 @@ namespace tarasenko
   {
     Vector();
     ~Vector();
+    bool empty() const noexcept;
   private:
     T* data_;
     size_t size_;
@@ -26,5 +27,11 @@ cap_()
 template< class T >
 tarasenko::Vector< T >::~Vector()
 {}
+
+template< class T >
+bool tarasenko::Vector< T >::empty() const noexcept
+{
+  return false;
+}
 
 #endif
