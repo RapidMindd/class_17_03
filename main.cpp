@@ -93,6 +93,21 @@ bool testElemOutOfBoundAccessConst()
   }
 }
 
+bool testCopyConstructorEmpty()
+{
+  tarasenko::Vector< int > v;
+  tarasenko::Vector< int > another = v;
+  return v == another;
+}
+
+bool testCopyConstructorNonEmpty()
+{
+  tarasenko::Vector< int > v;
+  v.pushBack(1);
+  tarasenko::Vector< int > another = v;
+  return v == another;
+}
+
 int main()
 {
   using test_t = std::pair< const char*, bool(*)() >;
@@ -104,7 +119,9 @@ int main()
     {"In bound access", testElemAccess},
     {"Out of bounds access", testElemOutOfBoundAccess},
     {"In bound access const", testElemAccessConst},
-    {"Out of bounds access const", testElemOutOfBoundAccessConst}
+    {"Out of bounds access const", testElemOutOfBoundAccessConst},
+    {"Copy empty vector", testCopyConstructorEmpty},
+    {"Copy non-empty vector", testCopyConstructorNonEmpty}
   };
   const size_t count = sizeof(tests) / sizeof(test_t);
   std::cout << std::boolalpha;

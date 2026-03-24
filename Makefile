@@ -7,3 +7,6 @@ main: main.cpp
 
 clean:
 	@$(RM) main.d main.o main
+
+run: main
+	./main
