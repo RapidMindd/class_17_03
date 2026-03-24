@@ -58,6 +58,41 @@ bool testElemOutOfBoundAccess()
   }
 }
 
+bool testElemAccessConst()
+{
+  tarasenko::Vector< int > v;
+  const tarasenko::Vector< int >& rv = v;
+  v.pushBack(5);
+  try
+  {
+    const int& val = v.at(0);
+    return val == 5;
+  }
+  catch (...)
+  {
+    return false;
+  }
+}
+
+bool testElemOutOfBoundAccessConst()
+{
+  tarasenko::Vector< int > v;
+  const tarasenko::Vector< int >& rv = v;
+  try
+  {
+    const int& val = v.at(0);
+    return false;
+  }
+  catch (const std::out_of_range &)
+  {
+    return true;
+  }
+  catch (...)
+  {
+    return false;
+  }
+}
+
 int main()
 {
   using test_t = std::pair< const char*, bool(*)() >;
@@ -67,7 +102,9 @@ int main()
     {"Push back", testPushBack},
     {"Pop back", testPopBack},
     {"In bound access", testElemAccess},
-    {"Out of bounds access", testElemOutOfBoundAccess}
+    {"Out of bounds access", testElemOutOfBoundAccess},
+    {"In bound access const", testElemAccessConst},
+    {"Out of bounds access const", testElemOutOfBoundAccessConst}
   };
   const size_t count = sizeof(tests) / sizeof(test_t);
   std::cout << std::boolalpha;
