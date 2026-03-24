@@ -1,4 +1,4 @@
-main
-main.o
-main.d
 .vscode
+main
+*.o
+*.d

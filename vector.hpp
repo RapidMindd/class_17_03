@@ -13,11 +13,15 @@ namespace tarasenko
     Vector(Vector&&);
     Vector& operator=(const Vector&);
     Vector& operator=(Vector&&);
-    T& operator[](size_t index);
 
     bool isEmpty() const noexcept;
     size_t getSize() const noexcept;
     size_t getCapacity() const noexcept;
+
+    T& operator[](size_t index) noexcept;
+    const T& operator[](size_t index) const noexcept;
+    T& at(size_t index);
+    const T& at(size_t index) const;
 
     void pushBack(const T& v);
     void popBack();
@@ -108,9 +112,35 @@ void tarasenko::Vector< T >::popBack()
 }
 
 template< class T >
-T& tarasenko::Vector< T >::operator[](size_t index)
+T& tarasenko::Vector< T >::operator[](size_t index) noexcept
 {
   return data_[index];
+}
+
+template< class T >
+const T& tarasenko::Vector< T >::operator[](size_t index) const noexcept
+{
+  return data_[index];
+}
+
+template< class T >
+T& tarasenko::Vector< T >::at(size_t index)
+{
+  if (index < getSize())
+  {
+    return data_[index];
+  }
+  throw std::out_of_range("bad id");
+}
+
+template< class T >
+const T& tarasenko::Vector< T >::at(size_t index) const
+{
+  if (index < getSize())
+  {
+    return data_[index];
+  }
+  throw std::out_of_range("bad index");
 }
 
 #endif

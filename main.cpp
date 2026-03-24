@@ -4,6 +4,7 @@
 
 bool testEmptyVector()
 {
+  // std::cout << __func__ << "\n";
   tarasenko::Vector< int > v;
   return v.isEmpty();
 }
@@ -24,6 +25,39 @@ bool testPopBack()
   return v[v.getSize() - 1] == 5 && v.getSize() == 1;
 }
 
+bool testElemAccess()
+{
+  tarasenko::Vector< int > v;
+  v.pushBack(5);
+  try
+  {
+    int& val = v.at(0);
+    return val == 5;
+  }
+  catch (...)
+  {
+    return false;
+  }
+}
+
+bool testElemOutOfBoundAccess()
+{
+  tarasenko::Vector< int > v;
+  try
+  {
+    int& val = v.at(0);
+    return false;
+  }
+  catch (const std::out_of_range &)
+  {
+    return true;
+  }
+  catch (...)
+  {
+    return false;
+  }
+}
+
 int main()
 {
   using test_t = std::pair< const char*, bool(*)() >;
@@ -31,7 +65,9 @@ int main()
   {
     {"Empty vector", testEmptyVector},
     {"Push back", testPushBack},
-    {"Pop back", testPopBack}
+    {"Pop back", testPopBack},
+    {"In bound access", testElemAccess},
+    {"Out of bounds access", testElemOutOfBoundAccess}
   };
   const size_t count = sizeof(tests) / sizeof(test_t);
   std::cout << std::boolalpha;
@@ -43,4 +79,6 @@ int main()
     pass = pass && res;
   }
   std::cout << "RESULT: " << pass << "\n";
+  // количество пройденных/непройденных
+  // только не прошедшие выводить
 }
