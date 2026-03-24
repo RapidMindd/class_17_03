@@ -114,7 +114,8 @@ void tarasenko::Vector< T >::popBack()
 template< class T >
 T& tarasenko::Vector< T >::operator[](size_t index) noexcept
 {
-  return data_[index];
+  const Vector< T >* cthis = this;
+  return const_cast< T& >((*cthis)[index]);
 }
 
 template< class T >
@@ -126,11 +127,8 @@ const T& tarasenko::Vector< T >::operator[](size_t index) const noexcept
 template< class T >
 T& tarasenko::Vector< T >::at(size_t index)
 {
-  if (index < getSize())
-  {
-    return data_[index];
-  }
-  throw std::out_of_range("bad id");
+  const Vector< T >* cthis = this;
+  return const_cast< T& >(cthis->at(index));
 }
 
 template< class T >
@@ -138,7 +136,7 @@ const T& tarasenko::Vector< T >::at(size_t index) const
 {
   if (index < getSize())
   {
-    return data_[index];
+    return (*this)[index];
   }
   throw std::out_of_range("bad index");
 }
