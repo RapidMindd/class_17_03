@@ -239,6 +239,22 @@ bool testSwap()
   return v == another_copy && another == v_copy;
 }
 
+bool testSelfCopyAssignment()
+{
+  tarasenko::Vector< int > v(5, 6);
+  tarasenko::Vector< int > copy = v;
+  v = v;
+  return v == copy;
+}
+
+bool testSelfMoveAssignment()
+{
+  tarasenko::Vector< int > v(5, 6);
+  tarasenko::Vector< int > copy = v;
+  v = std::move(v);
+  return v == copy;
+}
+
 
 int main()
 {
@@ -265,7 +281,9 @@ int main()
     {"Copy assignment non-empty", testCopyAssignmentNonEmpty},
     {"Move assignment empty", testMoveAssignmentEmpty},
     {"Move assignment non-empty", testMoveAssignmentNonEmpty},
-    {"Swap", testSwap}
+    {"Swap", testSwap},
+    {"Copy assignment to itself", testSelfCopyAssignment},
+    {"Move assignment to itself", testSelfMoveAssignment}
   };
   const size_t count = sizeof(tests) / sizeof(test_t);
   std::cout << std::boolalpha;
