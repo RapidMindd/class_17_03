@@ -30,7 +30,7 @@ namespace tarasenko
     void erase(size_t i);
     void extend(size_t new_cap);
 
-    void swap(const Vector< T >& rhs) noexcept;
+    void swap(Vector< T >& rhs) noexcept;
     
   private:
     T* data_;
@@ -168,7 +168,7 @@ tarasenko::Vector< T >::Vector(size_t size):
 
 template< class T >
 tarasenko::Vector< T >::Vector(size_t size, const T& init):
-  Vector(size_)
+  Vector(size)
 {
   for (size_t i = 0; i < size; ++i)
   {
@@ -193,11 +193,11 @@ tarasenko::Vector< T >& tarasenko::Vector< T >::operator=(const Vector< T >& rhs
 }
 
 template< class T >
-void tarasenko::Vector< T >::swap(const Vector< T >& rhs) noexcept
+void tarasenko::Vector< T >::swap(Vector< T >& rhs) noexcept
 {
-  std::swap(data_, copy.data_);
-  std::swap(size_, copy.size_);
-  std::swap(cap_, copy.cap_);
+  std::swap(data_, rhs.data_);
+  std::swap(size_, rhs.size_);
+  std::swap(cap_, rhs.cap_);
 }
 
 template< class T >
