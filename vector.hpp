@@ -26,8 +26,10 @@ namespace tarasenko
 
     void pushBack(const T& v);
     void popBack();
-    void insert(size_t i, const T& v);
+    void insert(size_t i, const T& elem);
+    void insert(size_t i, const Vector< T >& rhs, size_t start, size_t end);
     void erase(size_t i);
+    void erase(size_t start, size_t end);
     void extend(size_t new_cap);
 
     void swap(Vector< T >& rhs) noexcept;
@@ -215,6 +217,73 @@ tarasenko::Vector< T >& tarasenko::Vector< T >::operator=(Vector&& rhs) noexcept
   Vector< T > copy = std::move(rhs);
   swap(copy);
   return *this;
+}
+
+template< class T >
+void tarasenko::Vector< T >::insert(size_t i, const T& elem)
+{
+  Vector< T > copy{size_ + 1};
+  for (size_t k = 0; k < i; ++k)
+  {
+    copy[k] = (*this)[k];
+  }
+  copy[i] = elem;
+  for (size_t k = i; k < size_; ++k)
+  {
+    copy[k + 1] = (*this)[k];
+  }
+  swap(copy);
+}
+
+template< class T >
+void tarasenko::Vector< T >::insert(size_t i, const Vector< T >& rhs, size_t start, size_t end)
+{
+  size_t quantity = end - start;
+  Vector< T > copy{size_ + quantity};
+  for (size_t k = 0; k < i; ++k)
+  {
+    copy[k] = (*this)[k];
+  }
+  for (size_t k = i; k < i + quantity; ++k)
+  {
+    copy[k] = rhs[start + k - i];
+  }
+  for (size_t k = i + quantity; k < copy.getSize(); ++k)
+  {
+    copy[k] = (*this)[k - quantity];
+  }
+  swap(copy);
+}
+
+template< class T >
+void tarasenko::Vector< T >::erase(size_t i)
+{
+  Vector< T > copy{size_ - 1};
+  for (size_t k = 0; k < i; ++k)
+  {
+    copy[k] = (*this)[k];
+  }
+  for (size_t k = i; k < copy.getSize(); ++k)
+  {
+    copy[k] = (*this)[k + 1];
+  }
+  swap(copy);
+}
+
+template< class T >
+void tarasenko::Vector< T >::erase(size_t start, size_t end)
+{
+  size_t quantity = end - start;
+  Vector< T > copy{size_ - quantity};
+  for (size_t i = 0; i < start; ++i)
+  {
+    copy[i] = (*this)[i];
+  }
+  for (size_t i = start; i < copy.getSize(); ++i)
+  {
+    copy[i] = (*this)[i + quantity];
+  }
+  swap(copy);
 }
 
 // строгая гарантия 2 инсерта + 2 эрейза

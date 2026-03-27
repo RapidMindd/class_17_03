@@ -255,6 +255,47 @@ bool testSelfMoveAssignment()
   return v == copy;
 }
 
+bool testInsertOneElem()
+{
+  tarasenko::Vector< int > v(5, 6);
+  v.insert(3, 4);
+  return v.getSize() == 6 && v[3] == 4;
+}
+
+bool testInsertSeveralElems()
+{
+  tarasenko::Vector< int > v(5, 6);
+  tarasenko::Vector< int > another;
+  for (size_t i = 0; i < 10; ++i)
+  {
+    another.pushBack(i);
+  }
+  v.insert(3, another, 2, 5);
+  return v.getSize() == 8 && v[0] == 6 && v[5] == 4 && v[7] == 6;
+}
+
+bool testEraseOneElem()
+{
+  tarasenko::Vector< int > v;
+  for (size_t i = 0; i < 10; ++i)
+  {
+    v.pushBack(i);
+  }
+  v.erase(5);
+  return v.getSize() == 9 && v[4] == 4 && v[5] == 6;
+}
+
+bool testEraseSeveralElems()
+{
+  tarasenko::Vector< int > v;
+  for (size_t i = 0; i < 10; ++i)
+  {
+    v.pushBack(i);
+  }
+  v.erase(2, 5);
+  return v.getSize() == 7 && v[1] == 1 && v[2] == 5;
+}
+
 
 int main()
 {
@@ -283,7 +324,11 @@ int main()
     {"Move assignment non-empty", testMoveAssignmentNonEmpty},
     {"Swap", testSwap},
     {"Copy assignment to itself", testSelfCopyAssignment},
-    {"Move assignment to itself", testSelfMoveAssignment}
+    {"Move assignment to itself", testSelfMoveAssignment},
+    {"Insert one elem", testInsertOneElem},
+    {"Insert several elems", testInsertSeveralElems},
+    {"Erase one elem", testEraseOneElem},
+    {"Erase several elems", testEraseSeveralElems}
   };
   const size_t count = sizeof(tests) / sizeof(test_t);
   std::cout << std::boolalpha;
