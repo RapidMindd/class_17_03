@@ -11,13 +11,16 @@ namespace tarasenko
     ~Vector();
     Vector(const Vector&);
     Vector(Vector&&) noexcept;
-    Vector(size_t size, const T& init);
+    explicit Vector(size_t size, const T& init);
+    explicit Vector(std::initializer_list< T>);
     Vector& operator=(const Vector&);
     Vector& operator=(Vector&&) noexcept;
 
     bool isEmpty() const noexcept;
     size_t getSize() const noexcept;
     size_t getCapacity() const noexcept;
+    void reserve(size_t required);
+    void shrinkToFit();
 
     T& operator[](size_t index) noexcept;
     const T& operator[](size_t index) const noexcept;
@@ -25,7 +28,11 @@ namespace tarasenko
     const T& at(size_t index) const;
 
     void pushBack(const T& v);
+    void pushBackCount(size_t k, const T& val);
+    void unsafePushBack(const T& val);
+    void pushBackRange(IT begin, size_t c);
     void popBack();
+
     void insert(size_t i, const T& elem);
     void insert(size_t i, const Vector< T >& rhs, size_t start, size_t end);
     void erase(size_t i);
@@ -33,7 +40,7 @@ namespace tarasenko
     void extend(size_t new_cap);
 
     void swap(Vector< T >& rhs) noexcept;
-    
+
   private:
     T* data_;
     size_t size_;
@@ -222,7 +229,7 @@ tarasenko::Vector< T >& tarasenko::Vector< T >::operator=(Vector&& rhs) noexcept
 template< class T >
 void tarasenko::Vector< T >::insert(size_t i, const T& elem)
 {
-  Vector< T > copy{size_ + 1};
+  Vector< T > copy(size_ + 1);
   for (size_t k = 0; k < i; ++k)
   {
     copy[k] = (*this)[k];
@@ -239,7 +246,7 @@ template< class T >
 void tarasenko::Vector< T >::insert(size_t i, const Vector< T >& rhs, size_t start, size_t end)
 {
   size_t quantity = end - start;
-  Vector< T > copy{size_ + quantity};
+  Vector< T > copy(size_ + quantity);
   for (size_t k = 0; k < i; ++k)
   {
     copy[k] = (*this)[k];
@@ -258,7 +265,7 @@ void tarasenko::Vector< T >::insert(size_t i, const Vector< T >& rhs, size_t sta
 template< class T >
 void tarasenko::Vector< T >::erase(size_t i)
 {
-  Vector< T > copy{size_ - 1};
+  Vector< T > copy(size_ - 1);
   for (size_t k = 0; k < i; ++k)
   {
     copy[k] = (*this)[k];
@@ -274,7 +281,7 @@ template< class T >
 void tarasenko::Vector< T >::erase(size_t start, size_t end)
 {
   size_t quantity = end - start;
-  Vector< T > copy{size_ - quantity};
+  Vector< T > copy(size_ - quantity);
   for (size_t i = 0; i < start; ++i)
   {
     copy[i] = (*this)[i];
@@ -284,6 +291,31 @@ void tarasenko::Vector< T >::erase(size_t start, size_t end)
     copy[i] = (*this)[i + quantity];
   }
   swap(copy);
+}
+
+template< class T >
+tarasenko::Vector< T >::Vector(std::initializer_list< T > il):
+  Vector(il.size())
+{
+  std::cout << "hi\n";
+  size_t i = 0;
+  for (auto it = il.begin(); it != il.end(); ++it)
+  {
+    data_[i++] = *it;
+  }
+}
+
+template< class T >
+void tarasenko::Vector< T >::pushBackCount(size_t k, const T& val)
+{
+
+}
+
+template< class T >
+template< class IT >
+void tarasenko::Vector< T >::pushBackRange(IT begin, size_t c)
+{
+
 }
 
 // строгая гарантия 2 инсерта + 2 эрейза

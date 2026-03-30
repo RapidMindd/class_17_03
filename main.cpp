@@ -191,7 +191,7 @@ bool testMoveConstructorNonEmpty()
 
 bool testInitConstructor()
 {
-  tarasenko::Vector< int > v{2, 5};
+  tarasenko::Vector< int > v(2, 5);
   return v.getSize() == 2 && v[0] == 5 && v[1] == 5;
 }
 
@@ -296,11 +296,17 @@ bool testEraseSeveralElems()
   return v.getSize() == 7 && v[1] == 1 && v[2] == 5;
 }
 
+bool testInitializerList()
+{
+  tarasenko::Vector< int > v({1, 2, 3});
+  return v[0] == 1 && v[1] == 2 && v[2] == 3 && v.getSize() == 3;
+}
+
 
 int main()
 {
   using test_t = std::pair< const char*, bool(*)() >;
-  test_t tests[] = 
+  test_t tests[] =
   {
     {"Empty vector", testEmptyVector},
     {"Access operator", testAccessOperator},
@@ -328,7 +334,8 @@ int main()
     {"Insert one elem", testInsertOneElem},
     {"Insert several elems", testInsertSeveralElems},
     {"Erase one elem", testEraseOneElem},
-    {"Erase several elems", testEraseSeveralElems}
+    {"Erase several elems", testEraseSeveralElems},
+    {"Initializer list", testInitializerList}
   };
   const size_t count = sizeof(tests) / sizeof(test_t);
   std::cout << std::boolalpha;
