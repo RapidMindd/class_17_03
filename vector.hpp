@@ -5,6 +5,45 @@
 namespace tarasenko
 {
   template< class T >
+  struct Vector;
+
+  template< class T >
+  struct VecIt
+  {
+    VecIt() noexcept;
+    explicit VecIt(Vector< T >* owner, size_t index) noexcept;
+
+    T& operator*() const;
+    T* operator->() const;
+
+    T& operator[](long long index) const;
+
+    VecIt& operator++();
+    VecIt operator++(int);
+
+    VecIt& operator--();
+    VecIt operator--(int);
+
+    VecIt& operator+=(long long offset);
+    VecIt& operator-=(long long offset);
+
+    VecIt operator+(long long offset);
+    VecIt operator-(long long offset);
+
+    long long operator-(const VecIt& another) const;
+
+    bool operator==(const VecIt& another) const noexcept;
+    bool operator!=(const VecIt& another) const noexcept;
+    bool operator>(const VecIt& another) const noexcept;
+    bool operator<(const VecIt& another) const noexcept;
+    bool operator>=(const VecIt& another) const noexcept;
+    bool operator<=(const VecIt& another) const noexcept;
+  private:
+    Vector< T >* owner_;
+    size_t index_;
+  };
+
+  template< class T >
   struct Vector
   {
     Vector();
@@ -30,6 +69,7 @@ namespace tarasenko
     void pushBack(const T& v);
     void pushBackCount(size_t k, const T& val);
     void unsafePushBack(const T& val);
+    template< class IT >
     void pushBackRange(IT begin, size_t c);
     void popBack();
 
@@ -40,6 +80,9 @@ namespace tarasenko
     void extend(size_t new_cap);
 
     void swap(Vector< T >& rhs) noexcept;
+
+    VecIt< T > begin() noexcept;
+    VecIt< T > end() noexcept;
 
   private:
     T* data_;
@@ -306,6 +349,18 @@ tarasenko::Vector< T >::Vector(std::initializer_list< T > il):
 }
 
 template< class T >
+tarasenko::VecIt< T > tarasenko::Vector< T >::begin() noexcept
+{
+  return tarasenko::VecIt< T >(this, 0);
+}
+
+template< class T >
+tarasenko::VecIt< T > tarasenko::Vector< T >::end() noexcept
+{
+  return tarasenko::VecIt< T >(this, size_);
+}
+
+template< class T >
 void tarasenko::Vector< T >::pushBackCount(size_t k, const T& val)
 {
 
@@ -318,6 +373,55 @@ void tarasenko::Vector< T >::pushBackRange(IT begin, size_t c)
 
 }
 
+template< class T >
+tarasenko::VecIt< T >::VecIt() noexcept:
+  owner_(nullptr),
+  index_(0)
+{}
+
+template< class T >
+tarasenko::VecIt< T >::VecIt(tarasenko::Vector< T >* owner, size_t index) noexcept:
+  owner_(owner),
+  index_(index)
+{}
+
+template< class T >
+T& tarasenko::VecIt< T >::operator*() const
+{
+  return (*owner_)[index_];
+}
+
+template< class T >
+T* tarasenko::VecIt< T >::operator->() const
+{
+  return &(**this);
+}
+
+template< class T >
+T& tarasenko::VecIt< T >::operator[](long long index) const
+{
+
+}
+
+template< class T >
+tarasenko::VecIt< T >& tarasenko::VecIt< T >::operator++()
+{
+  ++this->index_;
+  return *this;
+}
+
+template< class T >
+bool tarasenko::VecIt< T >::operator==(const VecIt< T >& another) const noexcept
+{
+  return (owner_ == another.owner_) && (index_ == another.index_);
+}
+
+template< class T >
+bool tarasenko::VecIt< T >::operator!=(const VecIt< T >& another) const noexcept
+{
+  return !(*this == another);
+}
+
 // строгая гарантия 2 инсерта + 2 эрейза
 // + тесты для всего предыдущего
 // + дз: итераторы для вектора
@@ -325,5 +429,8 @@ void tarasenko::Vector< T >::pushBackRange(IT begin, size_t c)
 // например с итераторами из списка
 // по 3 штуки
 // + тесты этого
+
+// классная: реализовать методы
+// домашка: избавиться от требования конструктора по умолчанию для T
 
 #endif

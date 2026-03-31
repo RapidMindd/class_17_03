@@ -302,6 +302,33 @@ bool testInitializerList()
   return v[0] == 1 && v[1] == 2 && v[2] == 3 && v.getSize() == 3;
 }
 
+bool testItDereference()
+{
+  struct Int
+  {
+    int val;
+  };
+  tarasenko::Vector< int > v({1, 2, 3});
+  tarasenko::VecIt< int > it = v.begin();
+  tarasenko::Vector< Int > v2(3, {5});
+  tarasenko::VecIt< Int > it2 = v2.begin();
+  return *it == 1 && it2->val == 5;
+}
+
+bool testBeginEnd()
+{
+  tarasenko::Vector< int > v({0, 1, 2});
+  size_t i = 0;
+  for (auto it = v.begin(); it != v.end(); ++it, ++i)
+  {
+    if (*it != i)
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
 
 int main()
 {
@@ -335,7 +362,9 @@ int main()
     {"Insert several elems", testInsertSeveralElems},
     {"Erase one elem", testEraseOneElem},
     {"Erase several elems", testEraseSeveralElems},
-    {"Initializer list", testInitializerList}
+    {"Initializer list", testInitializerList},
+    {"Iterator dereference", testItDereference},
+    {"Begin and end", testBeginEnd}
   };
   const size_t count = sizeof(tests) / sizeof(test_t);
   std::cout << std::boolalpha;
