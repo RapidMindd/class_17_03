@@ -12,6 +12,7 @@ namespace tarasenko
   {
     VecIt() noexcept;
     explicit VecIt(Vector< T >* owner, size_t index) noexcept;
+    explicit VecIt(Vector< T >* owner, T* ptr) noexcept;
 
     T& operator*() const;
     T* operator->() const;
@@ -44,8 +45,14 @@ namespace tarasenko
   };
 
   template< class T >
+  VecIt< T > operator+(long long offset, const VecIt< T >& it) noexcept;
+
+  template< class T >
   struct Vector
   {
+
+    friend struct VecIt< T >;
+
     Vector();
     ~Vector();
     Vector(const Vector&);
@@ -350,13 +357,13 @@ tarasenko::Vector< T >::Vector(std::initializer_list< T > il):
 template< class T >
 tarasenko::VecIt< T > tarasenko::Vector< T >::begin() noexcept
 {
-  return tarasenko::VecIt< T >(this, 0);
+  return tarasenko::VecIt< T >(this, static_cast< size_t >(0));
 }
 
 template< class T >
 tarasenko::VecIt< T > tarasenko::Vector< T >::end() noexcept
 {
-  return tarasenko::VecIt< T >(this, size_);
+  return tarasenko::VecIt< T >(this, static_cast< size_t >(size_));
 }
 
 template< class T >
@@ -499,6 +506,18 @@ tarasenko::VecIt< T >& tarasenko::VecIt< T >::operator-=(long long offset)
   index_ -= offset;
   return *this;
 }
+
+template< class T >
+tarasenko::VecIt< T > tarasenko::operator+(long long offset, const tarasenko::VecIt< T >& it) noexcept
+{
+  return it + offset;
+}
+
+template< class T >
+tarasenko::VecIt< T >::VecIt(tarasenko::Vector< T >* owner, T* ptr) noexcept:
+  owner_(owner),
+  index_(ptr - owner->data_)
+{}
 
 // строгая гарантия 2 инсерта + 2 эрейза
 // + тесты для всего предыдущего

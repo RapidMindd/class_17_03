@@ -385,6 +385,19 @@ bool testAccessOperatorForIterator()
   return v.begin()[2] == 2 && v.begin()[0] == 0;
 }
 
+bool testSumNumWithIterator()
+{
+  tarasenko::Vector< int > v({0, 1, 2});
+  return 3 + v.begin() == v.end();
+}
+
+bool testConstructorByPointer()
+{
+  tarasenko::Vector< int > v({0, 1, 2});
+  tarasenko::VecIt< int > it(&v, &v[1]);
+  return it - 1 == v.begin() && it + 2 == v.end();
+}
+
 
 int main()
 {
@@ -427,7 +440,9 @@ int main()
     {"Operator minus for iterators", testIteratorsDiff},
     {"Postfix increment and decrement operators", testPostfixAddSubtract},
     {"Operators += and -=", testAddSubtractWithChanging},
-    {"Access operator for iterator", testAccessOperatorForIterator}
+    {"Access operator for iterator", testAccessOperatorForIterator},
+    {"Free operator+ for num and iterator", testSumNumWithIterator},
+    {"Iterator constructor by pointer", testConstructorByPointer}
   };
   const size_t count = sizeof(tests) / sizeof(test_t);
   std::cout << std::boolalpha;
