@@ -326,7 +326,63 @@ bool testBeginEnd()
       return false;
     }
   }
-  return true;
+  return *(--(v.end())) == 2;
+}
+
+bool testIteratorsComparison()
+{
+  tarasenko::Vector< int > v({0, 1, 2});
+  auto begin = v.begin();
+  auto end = v.end();
+  auto some_it = begin;
+  ++++some_it;
+  return begin != end && some_it != end && some_it != begin && ++some_it == end;
+}
+
+bool testGreaterLessOperator()
+{
+  tarasenko::Vector< int > v({0, 1, 2});
+  auto some_it = v.begin();
+  auto another_it = v.end();
+  ++some_it;
+  --another_it;
+  return v.begin() < v.end() && some_it > v.begin() && another_it >= some_it && --another_it <= some_it;
+}
+
+bool testAddSubtract()
+{
+  tarasenko::Vector< int > v({0, 1, 2});
+  return v.begin() + v.getSize() == v.end() && v.end() - 2 == v.begin() + 1;
+}
+
+bool testIteratorsDiff()
+{
+  tarasenko::Vector< int > v({0, 1, 2});
+  return v.end() - v.begin() == 3 && v.begin() - v.end() == -3;
+}
+
+bool testPostfixAddSubtract()
+{
+  tarasenko::Vector< int > v({0, 1, 2});
+  auto some_it = v.begin();
+  auto another_it = v.end();
+  another_it--;
+  another_it--;
+  return v.begin() == some_it++ && some_it == another_it;
+}
+
+bool testAddSubtractWithChanging()
+{
+  tarasenko::Vector< int > v({0, 1, 2});
+  auto some_it = v.begin();
+  auto another_it = v.end();
+  return (some_it += 2) == (another_it -= 1);
+}
+
+bool testAccessOperatorForIterator()
+{
+  tarasenko::Vector< int > v({0, 1, 2});
+  return v.begin()[2] == 2 && v.begin()[0] == 0;
 }
 
 
@@ -364,7 +420,14 @@ int main()
     {"Erase several elems", testEraseSeveralElems},
     {"Initializer list", testInitializerList},
     {"Iterator dereference", testItDereference},
-    {"Begin and end", testBeginEnd}
+    {"Begin and end", testBeginEnd},
+    {"Iterators comparison", testIteratorsComparison},
+    {"Greater and less operators", testGreaterLessOperator},
+    {"Add and subtract operators", testAddSubtract},
+    {"Operator minus for iterators", testIteratorsDiff},
+    {"Postfix increment and decrement operators", testPostfixAddSubtract},
+    {"Operators += and -=", testAddSubtractWithChanging},
+    {"Access operator for iterator", testAccessOperatorForIterator}
   };
   const size_t count = sizeof(tests) / sizeof(test_t);
   std::cout << std::boolalpha;

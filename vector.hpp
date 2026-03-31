@@ -27,10 +27,10 @@ namespace tarasenko
     VecIt& operator+=(long long offset);
     VecIt& operator-=(long long offset);
 
-    VecIt operator+(long long offset);
-    VecIt operator-(long long offset);
+    VecIt operator+(long long offset) const noexcept;
+    VecIt operator-(long long offset) const noexcept;
 
-    long long operator-(const VecIt& another) const;
+    long long operator-(const VecIt& another) const noexcept;
 
     bool operator==(const VecIt& another) const noexcept;
     bool operator!=(const VecIt& another) const noexcept;
@@ -340,7 +340,6 @@ template< class T >
 tarasenko::Vector< T >::Vector(std::initializer_list< T > il):
   Vector(il.size())
 {
-  std::cout << "hi\n";
   size_t i = 0;
   for (auto it = il.begin(); it != il.end(); ++it)
   {
@@ -400,14 +399,37 @@ T* tarasenko::VecIt< T >::operator->() const
 template< class T >
 T& tarasenko::VecIt< T >::operator[](long long index) const
 {
-
+  return *(*this + index);
 }
 
 template< class T >
 tarasenko::VecIt< T >& tarasenko::VecIt< T >::operator++()
 {
-  ++this->index_;
+  ++index_;
   return *this;
+}
+
+template< class T >
+tarasenko::VecIt< T > tarasenko::VecIt< T >::operator++(int)
+{
+  auto temp = *this;
+  ++index_;
+  return temp;
+}
+
+template< class T >
+tarasenko::VecIt< T >& tarasenko::VecIt< T >::operator--()
+{
+  --index_;
+  return *this;
+}
+
+template< class T >
+tarasenko::VecIt< T > tarasenko::VecIt< T >::operator--(int)
+{
+  auto temp = *this;
+  --index_;
+  return temp;
 }
 
 template< class T >
@@ -420,6 +442,62 @@ template< class T >
 bool tarasenko::VecIt< T >::operator!=(const VecIt< T >& another) const noexcept
 {
   return !(*this == another);
+}
+
+template< class T >
+bool tarasenko::VecIt< T >::operator>(const VecIt& another) const noexcept
+{
+  return index_ > another.index_;
+}
+
+template< class T >
+bool tarasenko::VecIt< T >::operator<(const VecIt& another) const noexcept
+{
+  return index_ < another.index_;
+}
+
+template< class T >
+bool tarasenko::VecIt< T >::operator>=(const VecIt& another) const noexcept
+{
+  return !(index_ < another.index_);
+}
+
+template< class T >
+bool tarasenko::VecIt< T >::operator<=(const VecIt& another) const noexcept
+{
+  return !(index_ > another.index_);
+}
+
+template< class T >
+tarasenko::VecIt< T > tarasenko::VecIt< T >::operator+(long long offset) const noexcept
+{
+  return VecIt< T >(owner_, index_ + offset);
+}
+
+template< class T >
+tarasenko::VecIt< T > tarasenko::VecIt< T >::operator-(long long offset) const noexcept
+{
+  return VecIt< T >(owner_, index_ - offset);
+}
+
+template< class T >
+long long tarasenko::VecIt< T >::operator-(const tarasenko::VecIt< T >& another) const noexcept
+{
+  return static_cast< long long >(index_) - static_cast< long long >(another.index_);
+}
+
+template< class T >
+tarasenko::VecIt< T >& tarasenko::VecIt< T >::operator+=(long long offset)
+{
+  index_ += offset;
+  return *this;
+}
+
+template< class T >
+tarasenko::VecIt< T >& tarasenko::VecIt< T >::operator-=(long long offset)
+{
+  index_ -= offset;
+  return *this;
 }
 
 // строгая гарантия 2 инсерта + 2 эрейза
