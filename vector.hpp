@@ -82,8 +82,16 @@ namespace tarasenko
 
     void insert(size_t i, const T& elem);
     void insert(size_t i, const Vector< T >& rhs, size_t start, size_t end);
+    void insert(VecIt< T > pos, const T& elem);
+    template < class FwdIt >
+    void insert(VecIt< T > pos, FwdIt begin, size_t size);
+    template < class It >
+    void insert(VecIt< T > pos, It from);
     void erase(size_t i);
     void erase(size_t start, size_t end);
+    void erase(VecIt< T > pos);
+    void erase(VecIt< T > pos, size_t size);
+    void erase(VecIt< T > start, VecIt< T > end);
     void extend(size_t new_cap);
 
     void swap(Vector< T >& rhs) noexcept;
@@ -518,6 +526,89 @@ tarasenko::VecIt< T >::VecIt(tarasenko::Vector< T >* owner, T* ptr) noexcept:
   owner_(owner),
   index_(ptr - owner->data_)
 {}
+
+template< class T >
+template< class FwdIt >
+void tarasenko::Vector< T >::insert(tarasenko::VecIt< T > pos, FwdIt begin, size_t size)
+{
+  Vector< T > copy(size_ + size);
+  size_t i = 0;
+  for (auto it = this->begin(); it != pos; ++it, ++i)
+  {
+    copy[i] = *it;
+  }
+  for (size_t k = 0; k < size; ++k, ++i)
+  {
+    copy[i] = *(begin++);
+  }
+  for (; pos != end(); ++pos, ++i)
+  {
+    copy[i] = *pos;
+  }
+  swap(copy);
+}
+
+template <class T >
+void tarasenko::Vector< T >::erase(tarasenko::VecIt< T > pos)
+{
+  Vector< T > copy(size_ - 1);
+  size_t i = 0;
+  for (auto it = begin(); it != pos; ++it, ++i)
+  {
+    copy[i] = *it;
+  }
+  for (++pos; pos != end(); ++pos, ++i)
+  {
+    copy[i] = *pos;
+  }
+  swap(copy);
+}
+
+template <class T >
+void tarasenko::Vector< T >::insert(tarasenko::VecIt< T > pos, const T& elem)
+{
+  Vector< T > copy(size_ + 1);
+  size_t i = 0;
+  for (auto it = begin(); it != pos; ++it, ++i)
+  {
+    copy[i] = *it;
+  }
+  copy[i] = elem;
+  for (++i; pos != end(); ++pos, ++i)
+  {
+    copy[i] = *pos;
+  }
+  swap(copy);
+}
+
+template <class T >
+void tarasenko::Vector< T >::erase(tarasenko::VecIt< T > pos, size_t size)
+{
+  Vector< T > copy(size_ - size);
+  size_t i = 0;
+  for (auto it = begin(); it != pos; ++it, ++i)
+  {
+    copy[i] = *it;
+  }
+  for (pos += size; pos != end(); ++pos, ++i)
+  {
+    copy[i] = *pos;
+  }
+  swap(copy);
+}
+
+template <class T >
+void tarasenko::Vector< T >::erase(tarasenko::VecIt< T > start, tarasenko::VecIt< T > end)
+{
+  erase(start, end - start);
+}
+
+template< class T >
+template< class It >
+void tarasenko::Vector< T >::insert(VecIt< T > pos, It from)
+{
+  insert(pos, *from);
+}
 
 // строгая гарантия 2 инсерта + 2 эрейза
 // + тесты для всего предыдущего

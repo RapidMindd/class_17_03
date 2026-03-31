@@ -1,6 +1,7 @@
 #include <iostream>
 #include <iomanip>
 #include "vector.hpp"
+#include "bidir_list.hpp"
 
 bool testEmptyVector()
 {
@@ -398,6 +399,64 @@ bool testConstructorByPointer()
   return it - 1 == v.begin() && it + 2 == v.end();
 }
 
+bool testInsertRangeByFwdIter()
+{
+  tarasenko::Vector< int > v({0, 1, 2, 3, 4});
+  tarasenko::BidirList< int > list;
+  for (size_t i = 0; i < 5; ++i)
+  {
+    list.push_back(i);
+  }
+  v.insert(tarasenko::VecIt< int >(&v, 2), list.begin(), 3);
+  tarasenko::Vector< int > standard({0, 1, 0, 1, 2, 2, 3, 4});
+  return v == standard;
+}
+
+bool testEraseByIter()
+{
+  tarasenko::Vector< int > v({0, 1, 2, 3, 4});
+  v.erase(tarasenko::VecIt< int >(&v, 3));
+  tarasenko::Vector< int > standard({0, 1, 2, 4});
+  return v == standard;
+}
+
+bool testInsertOneElemByIter()
+{
+  tarasenko::Vector< int > v({0, 1, 2});
+  v.insert(tarasenko::VecIt< int >(&v, 2), 5);
+  tarasenko::Vector< int > standard({0, 1, 5, 2});
+  return v == standard;
+}
+
+bool testEraseRangeByIter()
+{
+  tarasenko::Vector< int > v({0, 1, 2, 3, 4, 5});
+  v.erase(tarasenko::VecIt< int >(&v, 2), 2);
+  tarasenko::Vector< int > standard({0, 1, 4, 5});
+  return v == standard;
+}
+
+bool testEraseRangeByTwoIters()
+{
+  tarasenko::Vector< int > v({0, 1, 2, 3, 4, 5});
+  v.erase(tarasenko::VecIt< int >(&v, 2), tarasenko::VecIt< int >(&v, 4));
+  tarasenko::Vector< int > standard({0, 1, 4, 5});
+  return v == standard;
+}
+
+bool testInsertOneElemByAnyIter()
+{
+  tarasenko::Vector< int > v({3, 4, 5});
+  tarasenko::BidirList< int > list;
+  for (size_t i = 0; i < 5; ++i)
+  {
+    list.push_back(i);
+  }
+  v.insert(tarasenko::VecIt< int >(&v, 2), ++(list.begin()));
+  tarasenko::Vector< int > standard({3, 4, 1, 5});
+  return v == standard;
+}
+
 
 int main()
 {
@@ -442,7 +501,13 @@ int main()
     {"Operators += and -=", testAddSubtractWithChanging},
     {"Access operator for iterator", testAccessOperatorForIterator},
     {"Free operator+ for num and iterator", testSumNumWithIterator},
-    {"Iterator constructor by pointer", testConstructorByPointer}
+    {"Iterator constructor by pointer", testConstructorByPointer},
+    {"Insert range with forward iterator", testInsertRangeByFwdIter},
+    {"Erase one elem by iter", testEraseByIter},
+    {"Insert one elem by iter", testInsertOneElemByIter},
+    {"Erase range by iter", testEraseRangeByIter},
+    {"Erase range by two iters", testEraseRangeByTwoIters},
+    {"Insert one elem by any iter", testInsertOneElemByAnyIter}
   };
   const size_t count = sizeof(tests) / sizeof(test_t);
   std::cout << std::boolalpha;
