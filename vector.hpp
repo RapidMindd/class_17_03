@@ -1,6 +1,7 @@
 #ifndef VECTOR_HPP
 #define VECTOR_HPP
 #include <cstddef>
+#include <initializer_list>
 
 namespace tarasenko
 {
