@@ -92,6 +92,8 @@ namespace tarasenko
     void erase(VecIt< T > pos);
     void erase(VecIt< T > pos, size_t size);
     void erase(VecIt< T > start, VecIt< T > end);
+    template< class Predicate >
+    void erase(VecIt< T > start, VecIt< T > end, Predicate func);
     void extend(size_t new_cap);
 
     void swap(Vector< T >& rhs) noexcept;
@@ -608,6 +610,39 @@ template< class It >
 void tarasenko::Vector< T >::insert(VecIt< T > pos, It from)
 {
   insert(pos, *from);
+}
+
+template< class T >
+template< class Predicate >
+void tarasenko::Vector< T >::erase(tarasenko::VecIt< T > start, tarasenko::VecIt< T > end, Predicate func)
+{
+  size_t to_remove = 0;
+  for (auto it = start; it != end; ++it)
+  {
+    if (func(*it))
+    {
+      ++to_remove;
+    }
+  }
+  Vector< T > copy(size_ - to_remove);
+  size_t i = 0;
+  for (auto it = begin(); it != start; ++it, ++i)
+  {
+    copy[i] = *it;
+  }
+  for (auto it = start; it != end; ++it)
+  {
+    if (!func(*it))
+    {
+      copy[i] = *it;
+      ++i;
+    }
+  }
+  for (auto it = end; it != this->end(); ++it, ++i)
+  {
+    copy[i] = *it;
+  }
+  swap(copy);
 }
 
 // строгая гарантия 2 инсерта + 2 эрейза

@@ -457,6 +457,14 @@ bool testInsertOneElemByAnyIter()
   return v == standard;
 }
 
+bool testEraseByPredicate()
+{
+  tarasenko::Vector< int > v({3, 4, 5, 6, 6, 7, 8});
+  v.erase(v.begin(), v.end(), [](int num){return !(num % 2);});
+  tarasenko::Vector< int > standard({3, 5, 7});
+  return v == standard;
+}
+
 
 int main()
 {
@@ -507,7 +515,8 @@ int main()
     {"Insert one elem by iter", testInsertOneElemByIter},
     {"Erase range by iter", testEraseRangeByIter},
     {"Erase range by two iters", testEraseRangeByTwoIters},
-    {"Insert one elem by any iter", testInsertOneElemByAnyIter}
+    {"Insert one elem by any iter", testInsertOneElemByAnyIter},
+    {"Erase range by predicate", testEraseByPredicate}
   };
   const size_t count = sizeof(tests) / sizeof(test_t);
   std::cout << std::boolalpha;
