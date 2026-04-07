@@ -465,6 +465,41 @@ bool testEraseByPredicate()
   return v == standard;
 }
 
+bool testReserve()
+{
+  tarasenko::Vector< int > v({1, 2, 3});
+  v.reserve(200);
+  return v.getCapacity() == 200 && v.getSize() == 3 && v[1] == 2;
+}
+
+bool testShrinkToFit()
+{
+  tarasenko::Vector< int > v({1, 2, 3, 4, 5});
+  v.shrinkToFit();
+  return v.getCapacity() == 5 && v.getSize() == 5 && v[4] == 5;
+}
+
+bool testPushBackCount()
+{
+  tarasenko::Vector< int > v({1, 2, 3});
+  v.pushBackCount(2, 10);
+  tarasenko::Vector< int > standard({1, 2, 3, 10, 10});
+  return v == standard;
+}
+
+bool testPushBackRange()
+{
+  tarasenko::Vector< int > v({1, 2, 3});
+  tarasenko::BidirList< int > list;
+  for (size_t i = 0; i < 5; ++i)
+  {
+    list.push_back(i);
+  }
+  v.pushBackRange(list.begin(), 3);
+  tarasenko::Vector< int > standard({1, 2, 3, 0, 1, 2});
+  return v == standard;
+}
+
 
 int main()
 {
@@ -516,7 +551,11 @@ int main()
     {"Erase range by iter", testEraseRangeByIter},
     {"Erase range by two iters", testEraseRangeByTwoIters},
     {"Insert one elem by any iter", testInsertOneElemByAnyIter},
-    {"Erase range by predicate", testEraseByPredicate}
+    {"Erase range by predicate", testEraseByPredicate},
+    {"Reserve space", testReserve},
+    {"Shrink to fit", testShrinkToFit},
+    {"Push back count", testPushBackCount},
+    {"Test push back range", testPushBackRange}
   };
   const size_t count = sizeof(tests) / sizeof(test_t);
   std::cout << std::boolalpha;

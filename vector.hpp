@@ -500,19 +500,6 @@ tarasenko::VecIt< T > tarasenko::Vector< T >::end() noexcept
 }
 
 template< class T >
-void tarasenko::Vector< T >::pushBackCount(size_t k, const T& val)
-{
-
-}
-
-template< class T >
-template< class IT >
-void tarasenko::Vector< T >::pushBackRange(IT begin, size_t c)
-{
-
-}
-
-template< class T >
 tarasenko::VecIt< T >::VecIt() noexcept:
   owner_(nullptr),
   index_(0)
@@ -844,6 +831,91 @@ void tarasenko::Vector< T >::erase(tarasenko::VecIt< T > start, tarasenko::VecIt
     copy.size_ = 0;
     throw;
   }
+}
+
+template< class T >
+void tarasenko::Vector< T >::reserve(size_t required)
+{
+  if (required > cap_)
+  {
+    extend(required);
+  }
+}
+
+template< class T >
+void tarasenko::Vector< T >::shrinkToFit()
+{
+  if (size_ == cap_)
+  {
+    return;
+  }
+
+  T* new_data = static_cast< T* >(::operator new(sizeof(T) * size_));
+  size_t created = 0;
+  try
+  {
+    for (size_t i = 0; i < size_; ++i)
+    {
+      new (new_data + i) T(data_[i]);
+      ++created;
+    }
+  }
+  catch (...)
+  {
+    for (size_t i = 0; i < created; ++i)
+    {
+      new_data[i].~T();
+    }
+    ::operator delete(new_data);
+    throw;
+  }
+
+  for (size_t i = 0; i < size_; ++i)
+  {
+    data_[i].~T();
+  }
+  ::operator delete(data_);
+
+  data_ = new_data;
+  cap_ = size_;
+}
+
+template< class T >
+void tarasenko::Vector< T >::pushBackCount(size_t k, const T& val)
+{
+  size_t new_size = size_ + k;
+  Vector< T > copy(new_size);
+  for (size_t i = 0; i < size_; ++i)
+  {
+    new (copy.data_ + copy.size_) T(data_[i]);
+    ++copy.size_;
+  }
+  for (size_t i = 0; i < k; ++i)
+  {
+    new (copy.data_ + copy.size_) T(val);
+    ++copy.size_;
+  }
+  swap(copy);
+}
+
+template< class T >
+template< class IT >
+void tarasenko::Vector< T >::pushBackRange(IT begin, size_t c)
+{
+  size_t new_size = size_ + c;
+  Vector< T > copy(new_size);
+  IT it = begin;
+  for (size_t i = 0; i < size_; ++i)
+  {
+    new (copy.data_ + copy.size_) T(data_[i]);
+    ++copy.size_;
+  }
+  for (size_t i = 0; i < c; ++i, ++it)
+  {
+    new (copy.data_ + copy.size_) T(*it);
+    ++copy.size_;
+  }
+  swap(copy);
 }
 
 // строгая гарантия 2 инсерта + 2 эрейза
