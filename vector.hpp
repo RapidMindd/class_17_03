@@ -339,31 +339,19 @@ void tarasenko::Vector< T >::insert(size_t i, const T& elem)
 {
   size_t new_size = size_ + 1;
   Vector< T > copy(new_size);
-  try
+  for (size_t k = 0; k < i; ++k)
   {
-    for (size_t k = 0; k < i; ++k)
-    {
-      new (copy.data_ + k) T((*this)[k]);
-      ++copy.size_;
-    }
-    new (copy.data_ + i) T(elem);
+    new (copy.data_ + k) T((*this)[k]);
     ++copy.size_;
-    for (size_t k = i; k < size_; ++k)
-    {
-      new (copy.data_ + k + 1) T ((*this)[k]);
-      ++copy.size_;
-    }
-    swap(copy);
   }
-  catch (...)
+  new (copy.data_ + i) T(elem);
+  ++copy.size_;
+  for (size_t k = i; k < size_; ++k)
   {
-    for (size_t i = 0; i < copy.size_; ++i)
-    {
-      copy[i].~T();
-    }
-    copy.size_ = 0;
-    throw;
+    new (copy.data_ + k + 1) T ((*this)[k]);
+    ++copy.size_;
   }
+  swap(copy);
 }
 
 template< class T >
@@ -372,34 +360,22 @@ void tarasenko::Vector< T >::insert(size_t i, const Vector< T >& rhs, size_t sta
   size_t quantity = end - start;
   size_t new_size = size_ + quantity;
   Vector< T > copy(new_size);
-  try
+  for (size_t k = 0; k < i; ++k)
   {
-    for (size_t k = 0; k < i; ++k)
-    {
-      new (copy.data_ + k) T((*this)[k]);
-      ++copy.size_;
-    }
-    for (size_t k = i; k < i + quantity; ++k)
-    {
-      new (copy.data_ + k) T(rhs[start + k - i]);
-      ++copy.size_;
-    }
-    for (size_t k = i + quantity; k < new_size; ++k)
-    {
-      new (copy.data_ + k) T((*this)[k - quantity]);
-      ++copy.size_;
-    }
-    swap(copy);
+    new (copy.data_ + k) T((*this)[k]);
+    ++copy.size_;
   }
-  catch (...)
+  for (size_t k = i; k < i + quantity; ++k)
   {
-    for (size_t i = 0; i < copy.size_; ++i)
-    {
-      copy[i].~T();
-    }
-    copy.size_ = 0;
-    throw;
+    new (copy.data_ + k) T(rhs[start + k - i]);
+    ++copy.size_;
   }
+  for (size_t k = i + quantity; k < new_size; ++k)
+  {
+    new (copy.data_ + k) T((*this)[k - quantity]);
+    ++copy.size_;
+  }
+  swap(copy);
 }
 
 template< class T >
@@ -407,29 +383,17 @@ void tarasenko::Vector< T >::erase(size_t i)
 {
   size_t new_size = size_ - 1;
   Vector< T > copy(new_size);
-  try
+  for (size_t k = 0; k < i; ++k)
   {
-    for (size_t k = 0; k < i; ++k)
-    {
-      new (copy.data_ + k) T((*this)[k]);
-      ++copy.size_;
-    }
-    for (size_t k = i; k < new_size; ++k)
-    {
-      new (copy.data_ + k) T((*this)[k + 1]);
-      ++copy.size_;
-    }
-    swap(copy);
+    new (copy.data_ + k) T((*this)[k]);
+    ++copy.size_;
   }
-  catch (...)
+  for (size_t k = i; k < new_size; ++k)
   {
-    for (size_t i = 0; i < copy.size_; ++i)
-    {
-      copy[i].~T();
-    }
-    copy.size_ = 0;
-    throw;
+    new (copy.data_ + k) T((*this)[k + 1]);
+    ++copy.size_;
   }
+  swap(copy);
 }
 
 template< class T >
@@ -438,29 +402,17 @@ void tarasenko::Vector< T >::erase(size_t start, size_t end)
   size_t quantity = end - start;
   size_t new_size = size_ - quantity;
   Vector< T > copy(size_ - quantity);
-  try
+  for (size_t i = 0; i < start; ++i)
   {
-    for (size_t i = 0; i < start; ++i)
-    {
-      new (copy.data_ + i) T((*this)[i]);
-      ++copy.size_;
-    }
-    for (size_t i = start; i < new_size; ++i)
-    {
-      new (copy.data_ + i) T((*this)[i + quantity]);
-      ++copy.size_;
-    }
-    swap(copy);
+    new (copy.data_ + i) T((*this)[i]);
+    ++copy.size_;
   }
-  catch (...)
+  for (size_t i = start; i < new_size; ++i)
   {
-    for (size_t i = 0; i < copy.size_; ++i)
-    {
-      copy[i].~T();
-    }
-    copy.size_ = 0;
-    throw;
+    new (copy.data_ + i) T((*this)[i + quantity]);
+    ++copy.size_;
   }
+  swap(copy);
 }
 
 template< class T >
@@ -646,9 +598,7 @@ void tarasenko::Vector< T >::insert(tarasenko::VecIt< T > pos, FwdIt begin, size
   size_t new_size = size_ + size;
   Vector< T > copy(new_size);
   size_t i = 0;
-  try
-  {
-    for (auto it = this->begin(); it != pos; ++it, ++i)
+  for (auto it = this->begin(); it != pos; ++it, ++i)
   {
     new (copy.data_ + i) T(*it);
     ++copy.size_;
@@ -664,16 +614,6 @@ void tarasenko::Vector< T >::insert(tarasenko::VecIt< T > pos, FwdIt begin, size
     ++copy.size_;
   }
   swap(copy);
-  }
-  catch (...)
-  {
-    for (size_t i = 0; i < copy.size_; ++i)
-    {
-      copy[i].~T();
-    }
-    copy.size_ = 0;
-    throw;
-  }
 }
 
 template <class T >
@@ -682,29 +622,17 @@ void tarasenko::Vector< T >::erase(tarasenko::VecIt< T > pos)
   size_t new_size = size_ - 1;
   Vector< T > copy(new_size);
   size_t i = 0;
-  try
+  for (auto it = begin(); it != pos; ++it, ++i)
   {
-    for (auto it = begin(); it != pos; ++it, ++i)
-    {
-      new (copy.data_ + i) T(*it);
-      ++copy.size_;
-    }
-    for (++pos; pos != end(); ++pos, ++i)
-    {
-      new (copy.data_ + i) T(*pos);
-      ++copy.size_;
-    }
-    swap(copy);
+    new (copy.data_ + i) T(*it);
+    ++copy.size_;
   }
-  catch (...)
+  for (++pos; pos != end(); ++pos, ++i)
   {
-    for (size_t i = 0; i < copy.size_; ++i)
-    {
-      copy[i].~T();
-    }
-    copy.size_ = 0;
-    throw;
+    new (copy.data_ + i) T(*pos);
+    ++copy.size_;
   }
+  swap(copy);
 }
 
 template <class T >
@@ -713,31 +641,19 @@ void tarasenko::Vector< T >::insert(tarasenko::VecIt< T > pos, const T& elem)
   size_t new_size = size_ + 1;
   Vector< T > copy(new_size);
   size_t i = 0;
-  try
+  for (auto it = begin(); it != pos; ++it, ++i)
   {
-    for (auto it = begin(); it != pos; ++it, ++i)
-    {
-      new (copy.data_ + i) T(*it);
-      ++copy.size_;
-    }
-    new (copy.data_ + i) T(elem);
+    new (copy.data_ + i) T(*it);
     ++copy.size_;
-    for (++i; pos != end(); ++pos, ++i)
-    {
-      new (copy.data_ + i) T(*pos);
-      ++copy.size_;
-    }
-    swap(copy);
   }
-  catch (...)
+  new (copy.data_ + i) T(elem);
+  ++copy.size_;
+  for (++i; pos != end(); ++pos, ++i)
   {
-    for (size_t i = 0; i < copy.size_; ++i)
-    {
-      copy[i].~T();
-    }
-    copy.size_ = 0;
-    throw;
+    new (copy.data_ + i) T(*pos);
+    ++copy.size_;
   }
+  swap(copy);
 }
 
 template <class T >
@@ -746,29 +662,17 @@ void tarasenko::Vector< T >::erase(tarasenko::VecIt< T > pos, size_t size)
   size_t new_size = size_ - size;
   Vector< T > copy(new_size);
   size_t i = 0;
-  try
+  for (auto it = begin(); it != pos; ++it, ++i)
   {
-    for (auto it = begin(); it != pos; ++it, ++i)
-    {
-      new (copy.data_ + i) T(*it);
-      ++copy.size_;
-    }
-    for (pos += size; pos != end(); ++pos, ++i)
-    {
-      new (copy.data_ + i) T(*pos);
-      ++copy.size_;
-    }
-    swap(copy);
+    new (copy.data_ + i) T(*it);
+    ++copy.size_;
   }
-  catch (...)
+  for (pos += size; pos != end(); ++pos, ++i)
   {
-    for (size_t i = 0; i < copy.size_; ++i)
-    {
-      copy[i].~T();
-    }
-    copy.size_ = 0;
-    throw;
+    new (copy.data_ + i) T(*pos);
+    ++copy.size_;
   }
+  swap(copy);
 }
 
 template <class T >
@@ -799,38 +703,26 @@ void tarasenko::Vector< T >::erase(tarasenko::VecIt< T > start, tarasenko::VecIt
   size_t new_size = size_ - to_remove;
   Vector< T > copy(new_size);
   size_t i = 0;
-  try
+  for (auto it = begin(); it != start; ++it, ++i)
   {
-    for (auto it = begin(); it != start; ++it, ++i)
+    new (copy.data_ + i) T(*it);
+    ++copy.size_;
+  }
+  for (auto it = start; it != end; ++it)
+  {
+    if (!func(*it))
     {
       new (copy.data_ + i) T(*it);
+      ++i;
       ++copy.size_;
     }
-    for (auto it = start; it != end; ++it)
-    {
-      if (!func(*it))
-      {
-        new (copy.data_ + i) T(*it);
-        ++i;
-        ++copy.size_;
-      }
-    }
-    for (auto it = end; it != this->end(); ++it, ++i)
-    {
-      new (copy.data_ + i) T(*it);
-      ++copy.size_;
-    }
-    swap(copy);
   }
-  catch (...)
+  for (auto it = end; it != this->end(); ++it, ++i)
   {
-    for (size_t i = 0; i < copy.size_; ++i)
-    {
-      copy[i].~T();
-    }
-    copy.size_ = 0;
-    throw;
+    new (copy.data_ + i) T(*it);
+    ++copy.size_;
   }
+  swap(copy);
 }
 
 template< class T >
@@ -850,34 +742,13 @@ void tarasenko::Vector< T >::shrinkToFit()
     return;
   }
 
-  T* new_data = static_cast< T* >(::operator new(sizeof(T) * size_));
-  size_t created = 0;
-  try
-  {
-    for (size_t i = 0; i < size_; ++i)
-    {
-      new (new_data + i) T(data_[i]);
-      ++created;
-    }
-  }
-  catch (...)
-  {
-    for (size_t i = 0; i < created; ++i)
-    {
-      new_data[i].~T();
-    }
-    ::operator delete(new_data);
-    throw;
-  }
-
+  Vector < T > copy(size_);
   for (size_t i = 0; i < size_; ++i)
   {
-    data_[i].~T();
+    new (copy.data_ + i) T(data_[i]);
+    ++copy.size_;
   }
-  ::operator delete(data_);
-
-  data_ = new_data;
-  cap_ = size_;
+  swap(copy);
 }
 
 template< class T >
